@@ -23,3 +23,8 @@ app.use(express.json());
 //       );
 //     });
 // });
+
+const PORT = process.env.PORT || 1024
+app.listen(PORT, ()=>{
+    console.log(`Server running, port ${PORT}`)
+})
