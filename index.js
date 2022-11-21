@@ -2,29 +2,46 @@
 const path = require("node:path");
 require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 
-const express = require('express');
+const express = require("express");
+const fs = require("node:fs");
+const axios = require("axios");
 
 const app = express();
 
 app.use(express.json());
 
-// model to build test json recipe list
-// videos.forEach((video) => {
-//   axios
-//     .get(`https://project-2-api.herokuapp.com/videos/${video.id}?api_key=12`)
-//     .then((response) => {
-//       console.log(response.data);
-//       fs.appendFile(
-//         path.join(__dirname, "./data/videos-details.json"),
-//         JSON.stringify(response.data),
-//         (err) => {
-//           if (err) console.log(err);
-//         }
-//       );
-//     });
-// });
+const arraySeparator = ",";
+// function to add bits to array to separate objects while writing
+const syntaxInsertions = (insertion) => {
+  fs.appendFile(mealFile, insertion, (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+};
 
-const PORT = process.env.PORT || 1024
-app.listen(PORT, ()=>{
-    console.log(`Server running, port ${PORT}`)
-})
+const mealFile = path.join(__dirname, "./data/recipes.json");
+
+// meal DB 1 random meal: www.themealdb.com/api/json/v1/1/random.php?api_key=1
+
+// model to build test json recipe list
+const buildJSON = (targetURL) => {
+  syntaxInsertions("[");
+  for (i = 0; i < 15; i++) {
+    axios.get(targetURL).then((response) => {
+      console.log(response.data);
+      fs.appendFile(mealFile, JSON.stringify(response.data), (err) => {
+        if (err) console.log(err);
+      });
+    });
+    // syntaxInsertions(",");
+  }
+//   syntaxInsertions("]");
+};
+
+buildJSON(`http://www.themealdb.com/api/json/v1/1/random.php?api_key=1`);
+
+const PORT = process.env.PORT || 1024;
+app.listen(PORT, () => {
+  console.log(`Server running, port ${PORT}`);
+});
