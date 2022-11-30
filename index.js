@@ -39,7 +39,7 @@ const buildJSON = (targetURL) => {
 //   syntaxInsertions("]");
 };
 
-buildJSON(`http://www.themealdb.com/api/json/v1/1/random.php?api_key=1`);
+// buildJSON(`http://www.themealdb.com/api/json/v1/1/random.php?api_key=1`);
 
 const PORT = process.env.PORT || 1024;
 app.listen(PORT, () => {
