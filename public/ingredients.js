@@ -80,7 +80,7 @@ let valueOnly = [];
 let unitOnly = [];
 
 // array to hold value with fraction converted to number
-let fractionFree = []
+let fractionFree = [];
 
 // setup array to hold coupled ingredients & measures
 let correlatedIngredients = [];
@@ -152,21 +152,21 @@ const separateUnits = (
     // slice from start of string to index to return number. May include fractions eg 3/4.  will compute fraction to number later
 
     let value;
+    // if no number is returned set value to 1, eg; clove => 1 clove
     if (!element.slice(0, execOutput.index)) {
       value = 1;
     } else {
       value = element.slice(0, execOutput.index);
     }
     // slice from index to end of string to return unit
-    // TODO: problem if no number unit is sliced 0-1
     let unit;
-    if(execOutput.index === 0){
-      unit = element
-    }else{
-
+    // if the first character is a letter should be a discrete measure eg: pinch
+    if (execOutput.index === 0) {
+      unit = element;
+    } else {
       unit = element.slice(execOutput.index);
     }
-    valueOutput.push(value);
+    valueOutput.push(value.toString());
     unitOutput.push(unit);
   });
 };
@@ -180,7 +180,7 @@ const separateUnits = (
 
 const correlate = (nameArray, valueArray, unitArray, outputArray) => {
   for (let i = 0; i < nameArray.length; i++) {
-    // need conditional here: if value array is empty insert 1 for value field
+    // if value array is empty here set value to one eg: cinnamon stick
     if (!valueArray[i]) {
       outputArray[i] = [nameArray[i], 1, ""];
     } else {
@@ -198,12 +198,37 @@ mapNonEmpty(mealEntries, measurementMatch, ingredientMeasures);
 separateUnits(ingredientMeasures, letterMatch, valueOnly, unitOnly);
 
 // next step convert fractions to number
-const convertFraction =()=>{
-  
-}
+const convertFraction = (inputArray, outputArray) => {
+  let value;
+  inputArray.forEach((element) => {
+    if (element.match(/[/]/g)) {
+      let execOutput = /[/]/g.exec(element);
+      let leadingInteger;
+      let numerator;
+      let denominator;
+      // execOutput.index > 1 means character 0 should be integer
+      if (execOutput.index > 1) {
+        leadingInteger = element[0];
+        // character at index preceeding / (execOutput.index) is top of fraction
+        numerator = element[execOutput.index - 1];
+        denominator = element[execOutput.index + 1];
+        value = leadingInteger + numerator / denominator;
+      }
+      if (execOutput.index === 1) {
+        numerator = element[execOutput.index - 1];
+        denominator = element[execOutput.index + 1];
+        value = numerator / denominator;
+      }
+    } else {
+      value = element;
+    }
+    outputArray.push(value);
+  });
+};
+convertFraction(valueOnly, fractionFree);
 
 // create an array of arrays where ingredient and measure are matched
-correlate(ingredientItems, valueOnly, unitOnly, correlatedIngredients);
+correlate(ingredientItems, fractionFree, unitOnly, correlatedIngredients);
 // this successfully creates an array of arrays where each array item has ingredient name, measurement and unit. in the case of non-numeric units eg: pinch, can measurement will be assigned one
 console.log(correlatedIngredients);
 
@@ -220,9 +245,9 @@ const convertMeasures = (arrayWithMeasures, indexOfUnit, indexOfValue) => {
       // if unitless discrete quantity call spoonacular for an answer
       case unit === "":
         console.log(`call Spoonacular`);
-        // 1 pinch ~ 0.31 mL
+      // 1 pinch ~ 0.31 mL
       case unit.match(/pinch/i):
-      value = quantity* 0.31;
+        value = quantity * 0.31;
       case unit.match(/cup/gi):
         // if unit is in cups convert to mL, 1 cup ~ 237ml
         value = quantity * 237;
