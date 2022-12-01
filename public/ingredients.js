@@ -229,36 +229,42 @@ convertFraction(valueOnly, fractionFree);
 
 // create an array of arrays where ingredient and measure are matched
 correlate(ingredientItems, fractionFree, unitOnly, correlatedIngredients);
-// this successfully creates an array of arrays where each array item has ingredient name, measurement and unit. in the case of non-numeric units eg: pinch, can measurement will be assigned one
-console.log(correlatedIngredients);
+// this successfully creates an array of arrays where each array item has ingredient name, measurement (as number) and unit. in the case of non-numeric units eg: pinch, can measurement will be assigned one
 
 // next step put all measures in a standardized unit
 
 // this function takes an array with a number of non-standardized food measurements and converts as many as possible to mL
 // cases more specific to more general: kg then g, tbsp then tsp
-const convertMeasures = (arrayWithMeasures, indexOfUnit, indexOfValue) => {
+const convertMeasures = (arrayWithMeasures, indexOfValue, indexOfUnit) => {
   arrayWithMeasures.forEach((element) => {
     const quantity = element[indexOfValue];
     const unit = element[indexOfUnit];
     let value;
-    switch (unit) {
-      // if unitless discrete quantity call spoonacular for an answer
-      case unit === "":
-        console.log(`call Spoonacular`);
-      // 1 pinch ~ 0.31 mL
-      case unit.match(/pinch/i):
-        value = quantity * 0.31;
-      case unit.match(/cup/gi):
-        // if unit is in cups convert to mL, 1 cup ~ 237ml
-        value = quantity * 237;
-        console.log(value);
-      /**Cases:
-       * **switch should include no break; if no match fall through to default is desired
-       * default: could not handle otherwise: send to a place where user can manage
-       */
-      default:
-        // add item to an array that will be returned to user to ask what to do
-        console.log(element);
+    if (unit === "") {
+      // discrete quantity; call spoonacular for a conversion using ingredient name
+      console.log(`call Spoonacular`);
     }
+    if (unit.match(/pinch/i)) {
+      value = quantity * 0.31;
+    }
+    if (unit.match(/cup/gi)) {
+      value = quantity * 237;
+    }
+    if (unit.match(/t[ab][bls]/gi)) {
+      // expression to match tablespoon: tbs, tbsp, tblsp
+      value = quantity * 15;
+    }
+    if (unit.match(/t[es][ap]/gi)) {
+      // expression to match teaspoon: tsp, teaspoon
+      value = quantity * 5;
+    } else {
+      // add item to an array that will be returned to user to ask what to do
+      console.log(element);
+    }
+    element[indexOfValue] = value;
+    element[indexOfUnit] = "mL";
   });
 };
+// possibly improve this by populating an empty array instead of messing with an existing one
+convertMeasures(correlatedIngredients, 1, 2);
+// success!  all ingredients converted to mL.  This is not perfectly accurate but will serve to build a reasonable shopping list!
