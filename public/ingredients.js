@@ -188,16 +188,6 @@ const correlate = (nameArray, valueArray, unitArray, outputArray) => {
     }
   }
 };
-// map through recipe, add ingredient names to ingredientItems array
-mapNonEmpty(mealEntries, ingredientMatch, ingredientItems);
-
-// map through again: measurements to ingredientMeasures array
-mapNonEmpty(mealEntries, measurementMatch, ingredientMeasures);
-
-// loop through ingredientMeasures, separate quantity & unit into two fields
-separateUnits(ingredientMeasures, letterMatch, valueOnly, unitOnly);
-
-// next step convert fractions to number
 const convertFraction = (inputArray, outputArray) => {
   let value;
   inputArray.forEach((element) => {
@@ -225,13 +215,6 @@ const convertFraction = (inputArray, outputArray) => {
     outputArray.push(value);
   });
 };
-convertFraction(valueOnly, fractionFree);
-
-// create an array of arrays where ingredient and measure are matched
-correlate(ingredientItems, fractionFree, unitOnly, correlatedIngredients);
-// this successfully creates an array of arrays where each array item has ingredient name, measurement (as number) and unit. in the case of non-numeric units eg: pinch, can measurement will be assigned one
-
-// next step put all measures in a standardized unit
 
 // this function takes an array with a number of non-standardized food measurements and converts as many as possible to mL
 // cases more specific to more general: kg then g, tbsp then tsp
@@ -266,5 +249,22 @@ const convertMeasures = (arrayWithMeasures, indexOfValue, indexOfUnit) => {
   });
 };
 // possibly improve this by populating an empty array instead of messing with an existing one
+
+// map through recipe, add ingredient names to ingredientItems array
+mapNonEmpty(mealEntries, ingredientMatch, ingredientItems);
+
+// map through again: measurements to ingredientMeasures array
+mapNonEmpty(mealEntries, measurementMatch, ingredientMeasures);
+
+// loop through ingredientMeasures, separate quantity & unit into two fields
+separateUnits(ingredientMeasures, letterMatch, valueOnly, unitOnly);
+
+// next step convert fractions to number
+convertFraction(valueOnly, fractionFree);
+
+// create an array of arrays where each ingredient is matched with appropriate measure & units. In case of non numeric units eg: pinch measure = 1.
+correlate(ingredientItems, fractionFree, unitOnly, correlatedIngredients);
+
+// next step put all measures in a standardized unit
 convertMeasures(correlatedIngredients, 1, 2);
 // success!  all ingredients converted to mL.  This is not perfectly accurate but will serve to build a reasonable shopping list!
