@@ -5,10 +5,13 @@ require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 const express = require("express");
 const fs = require("node:fs");
 const axios = require("axios");
+const cors = require('cors');
 
 const app = express();
 
 app.use(express.json());
+
+const recipeRouter = require('./routes/recipes.js');
 
 const arraySeparator = ",";
 // function to add bits to array to separate objects while writing
@@ -39,7 +42,12 @@ const buildJSON = (targetURL) => {
 //   syntaxInsertions("]");
 };
 
+/* ****NOTE: uncomment line below and run to make api call for more recipes**** */
 // buildJSON(`http://www.themealdb.com/api/json/v1/1/random.php?api_key=1`);
+
+app.use(cors());
+
+app.use('/', recipeRouter)
 
 const PORT = process.env.PORT || 1024;
 app.listen(PORT, () => {
