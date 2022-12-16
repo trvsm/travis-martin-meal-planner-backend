@@ -42,6 +42,7 @@ const buildJSON = (targetURL) => {
 //   syntaxInsertions("]");
 };
 
+/* ****NOTE: uncomment line below and run to make api call for more recipes**** */
 // buildJSON(`http://www.themealdb.com/api/json/v1/1/random.php?api_key=1`);
 
 app.use(cors());
