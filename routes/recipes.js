@@ -7,10 +7,8 @@ const recipeFile = path.join(__dirname, "../data/recipes.json");
 
 const recipes = require(recipeFile);
 
-router
-.route('/recipes')
-.get((_req, res)=>{
-    res.status(200).json(recipes)
-})
+router.route("/recipes").get((_req, res) => {
+  res.status(200).json(recipes);
+});
 
 module.exports = router;
