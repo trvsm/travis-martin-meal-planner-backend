@@ -4,7 +4,8 @@
   "description": "Brainstation capstone project: grocery list planner",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "yarn": "yarn"
   },
   "author": "Travis Martin",
   "license": "ISC",
@@ -12,6 +13,7 @@
     "axios": "^1.1.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "yarn": "^1.22.19"
   }
 }
