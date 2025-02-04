@@ -5,13 +5,14 @@ require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
 const express = require("express");
 const fs = require("node:fs");
 const axios = require("axios");
-const cors = require('cors');
+const cors = require("cors");
 
 const app = express();
 
 app.use(express.json());
 
-const recipeRouter = require('./routes/recipes.js');
+const recipeRouter = require("./routes/recipes.js");
+const saveList = require("./routes/save-list.js");
 
 const arraySeparator = ",";
 // function to add bits to array to separate objects while writing
@@ -39,7 +40,7 @@ const buildJSON = (targetURL) => {
     });
     // syntaxInsertions(",");
   }
-//   syntaxInsertions("]");
+  //   syntaxInsertions("]");
 };
 
 /* ****NOTE: uncomment line below and run to make api call for more recipes**** */
@@ -47,9 +48,12 @@ const buildJSON = (targetURL) => {
 
 app.use(cors());
 
-app.use('/', recipeRouter)
+app.use("/", recipeRouter);
+app.use("/", saveList);
 
 const PORT = process.env.PORT || 1024;
 app.listen(PORT, () => {
   console.log(`Server running, port ${PORT}`);
 });
+
+// try saving and retrieving list by date
